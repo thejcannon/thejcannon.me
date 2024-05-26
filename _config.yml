@@ -6,6 +6,9 @@ author: Josh Cannon • <a href="mailto:joshdcannon@gmail.com">joshdcannon@gmail
 navbar-col: "#FDA"
 footer-col: "#FDA"
 
+navbar-links:
+  Now: "now"
+
 remote_theme: daattali/beautiful-jekyll@6.0.1
 plugins:
   - jekyll-feed
