@@ -8,6 +8,7 @@ footer-col: "#FDA"
 
 navbar-links:
   Now: "now"
+  GitHub: https://github.com/thejcannon
 
 remote_theme: daattali/beautiful-jekyll@6.0.1
 plugins:
