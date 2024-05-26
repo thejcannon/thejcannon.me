@@ -3,9 +3,11 @@ description: "A blog. Specifically, Josh Cannon's Blog."
 url: "https://joshcannon.me"
 
 author: Josh Cannon • <a href="mailto:joshdcannon@gmail.com">joshdcannon@gmail.com</a>
+navbar-col: "#FDA"
 
-markdown: kramdown
 remote_theme: daattali/beautiful-jekyll@6.0.1
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+
+
