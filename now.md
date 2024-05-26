@@ -1,6 +1,7 @@
-# What am I doing now?
-
-This page exists to allow you to "catch-up" on what's been happening since we last met/chatted/whatever.
+---
+title: What am I doing now?
+subtitle: This page exists to allow you to "catch-up" on what's been happening since we last met/chatted/whatever.
+---
 
 # Family
 
