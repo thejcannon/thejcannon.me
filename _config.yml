@@ -4,6 +4,7 @@ url: "https://joshcannon.me"
 
 author: Josh Cannon • <a href="mailto:joshdcannon@gmail.com">joshdcannon@gmail.com</a>
 navbar-col: "#FDA"
+footer-col: "#FDA"
 
 remote_theme: daattali/beautiful-jekyll@6.0.1
 plugins:
