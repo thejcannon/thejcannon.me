@@ -20,6 +20,12 @@ Yet all 3 are mine (What can I say? I'm greedy at heart).
 I get to help some of the brightest minds in the field do incredible things, just by being somewhat of an expert in the ecosystem they call "home" (Python).
 I get to play with some really exciting bleeding-edge tech. And most importantly, I have a never-ending stream of interesting problems I solve by being "the right" kind of clever.
 
+# Open Source
+
+I still help maintain Pantsbuild, albeit less actively than at my last job.
+
+Otherwise I have a few personal projects irons in the fire, but nothing serious yet.
+
 # Personal
 
 With the updates from the above, I hope it doesn't surprise you that this section has dwindled to almost none.
