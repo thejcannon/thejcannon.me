@@ -2,13 +2,17 @@ title: A Blog
 description: "A blog. Specifically, Josh Cannon's Blog."
 url: "https://joshcannon.me"
 
-author: Josh Cannon • joshdcannon@gmail.com
+author: Josh Cannon
 navbar-col: "#FDA"
 footer-col: "#FDA"
 
 navbar-links:
   Now: "now"
-  GitHub: https://github.com/thejcannon
+
+social-network-links:
+  email: "joshdcannon@gmail.com"
+  rss: true  # remove this line if you don't want to show an RSS link at the bottom
+  github: thejcannon
 
 remote_theme: daattali/beautiful-jekyll@6.0.1
 plugins:
