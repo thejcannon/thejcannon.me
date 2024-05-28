@@ -5,6 +5,8 @@ url: "https://joshcannon.me"
 author: Josh Cannon
 navbar-col: "#FDA"
 footer-col: "#FDA"
+hover-col: "#E2725B"
+footer-hover-col: "#E2725B"
 
 navbar-links:
   Now: "now"
