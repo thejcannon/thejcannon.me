@@ -17,6 +17,7 @@ social-network-links:
   email: "joshdcannon@gmail.com"
   rss: true
   github: thejcannon
+  mastodon: https://fosstodon.org/@thejcannon
 
 remote_theme: daattali/beautiful-jekyll@6.0.1
 plugins:
