@@ -1,5 +1,5 @@
 ---
-title: My thoughts on ruff (and now `uv`)
+title: My thoughts on ruff (and now uv)
 subtitle: I have thoughts, and they aren't what you think (I think).
 ---
 
