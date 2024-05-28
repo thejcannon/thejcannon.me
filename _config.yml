@@ -8,7 +8,7 @@ footer-col: "#FDA"
 hover-col: "#CFB288"
 link-col: "#E2725B"
 footer-hover-col: "#CFB288"
-footer-link-col: "#E2725B"
+footer-link-col: "#404040"
 
 navbar-links:
   Now: "now"
