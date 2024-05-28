@@ -15,7 +15,7 @@ navbar-links:
 
 social-network-links:
   email: "joshdcannon@gmail.com"
-  rss: true  # remove this line if you don't want to show an RSS link at the bottom
+  rss: true
   github: thejcannon
 
 remote_theme: daattali/beautiful-jekyll@6.0.1
