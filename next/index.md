@@ -1,5 +1,5 @@
 ---
-title: My thoughts on ruff (and now uv)
+title: My thoughts on ruff
 subtitle: I have thoughts, and they aren't what you think (I think).
 ---
 
@@ -17,6 +17,9 @@ I dreamed of a unified tool that I could use that not only found mistakes, but f
 dipped my toe into other ecosystems (like Rust or Javascript). I started the [NI Python Styleguide](https://ni.github.io/python-styleguide/)
 with the idea that I'd evaluate every flake8 plugin on Earth and see what rules were worth using. Eventually,
 I'd hope to take that list and find ways to auto-fix almost every entry so developers were free to develop code.
+
+I started a personal project which I'd hope would be that tool (I called it `convendjinn`. Aren't I clever)
+but never quite found the spark to want to make it a reality.
 
 Just as I was about to start a community call-to-action, [`ruff`](https://docs.astral.sh/ruff/) was released.
 
@@ -38,13 +41,32 @@ introspection). Compared to `flake8` and friends its extremely fast.
 
 ## Reception - Community
 
+### Author(s)
+
 Some claim that their gravitation towards `ruff` stems not from technical merits, but rather the demeanor of the authors
 of the respective tools. That the author of `flake8` had been unhelpful at times, and by comparison the author of `ruff`
 was genuinely cooperative.
+
+### IP
 
 There are also those in the community who felt that `ruff` unfairly ~stole~ borrowed the semantics of dozens of `flake8`
 plugins without proper accredation (at the time of creation) and without giving back to the ecosystem of tools and 
 plugins that made them popular in the first place.
 
+## My Reception
 
+I think all of these things are fair. Far be it from me to not recognize the widely popular reasons people switched.
 
+### Speed
+
+Let's start with speed.
+
+I love that it's fast. I think it needed to be to break through to folks, and it especially
+needed to be to make realtime IDE-feedback possible. I don't think it needed to be _this fast_ though to be successful.
+(Put another way, I wonder if it could've still been succuessful having been written in Python. More on that later).
+
+### Authors
+
+I think it's fair to say there's more to Software Engineering than just the "physical" code itself. 
+Although, I doubt many people switched _solely_ because they felt a certain way about the author, 
+but it likely didn't make the decision to switch any harder for themselves.
