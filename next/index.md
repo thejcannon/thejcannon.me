@@ -1,5 +1,5 @@
 ---
-title: `ruff` (and Astral)
+title: \`ruff\` (and Astral)
 subtitle: My thoughts, and others.
 ---
 
