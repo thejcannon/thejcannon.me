@@ -4,3 +4,31 @@ Pypi scraping
 - 665 of them don't have wheels
   - 108 of which released this year
   - 5 of which had a latest sdist of not tarball or zip (1 `.msi`, 3 `.exe`, and 1 `.tgz`)
+- of the wheels:
+
+```
+SELECT COUNT(DISTINCT(p.url))
+FROM packages p
+JOIN filenames f ON p.package_name = f.package_name
+WHERE p.url LIKE '%.whl'
+  AND f.filename LIKE 'src%'
+```
+
+  - 2 packages have `src/` files (1 unintentionally, 1 intentionally)
+  - 222 packages have `test/` files
+  - 153 packages have `tests/` files
+  - 49 packages have `doc/` files
+  - 25 packages have `docs/` files
+  - 24 packages have `python/` files
+
+
+- 3213 duplicate files `__init__.py` filepaths
+
+
+
+
+
+
+
+`test` and `tests` prefixes?
+`src`?
