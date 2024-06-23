@@ -125,7 +125,7 @@ So that leaves us with 2119 packages that don't follow the simple convention.
 
 ---
 
-[^1]:
+[^1]: Query
    ```sql
    SELECT pp.prefix, COUNT(*) as count
    FROM package_prefixes pp
@@ -136,7 +136,7 @@ So that leaves us with 2119 packages that don't follow the simple convention.
    LIMIT 10;
    ```
 
-[^2]:
+[^2]: Query
    ```sql
    SELECT pp.prefix, COUNT(*) as count
    FROM package_prefixes pp
@@ -147,7 +147,7 @@ So that leaves us with 2119 packages that don't follow the simple convention.
    LIMIT 10;
    ```
 
-[^3]: 
+[^3]: Query
    ```sql
    SELECT COUNT(*) as matching_packages
    FROM packages p
@@ -155,7 +155,7 @@ So that leaves us with 2119 packages that don't follow the simple convention.
    WHERE pp.prefix = p.package_name;
    ```
 
-[^4]:
+[^4]: Query
    ```sql
    WITH matching_packages AS (
        SELECT p.package_name
