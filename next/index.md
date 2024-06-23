@@ -68,37 +68,98 @@ magic incantations.
 
 ## Step 3: Let's have fun
 
+So, of the 7994 packages (6 of which failed to scrape due to one weird reason or another) scraped...
 
+### Common prefixes
 
-
-
-(Enable tooltips for the SQL?)
-
-- 665 of them don't have wheels
-  - 108 of which released this year
-  - 5 of which had a latest sdist of not tarball or zip (1 `.msi`, 3 `.exe`, and 1 `.tgz`)
-- 1 did have wheels, but they ended with `.exe` and `.egg`, so not wheels. 
-- of the wheels:
+The most common prefixes[^1] are:
 
 ```
-SELECT COUNT(DISTINCT(p.url))
-FROM packages p
-JOIN filenames f ON p.package_name = f.package_name
-WHERE p.url LIKE '%.whl'
-  AND f.filename LIKE 'src%'
+setup|629
+tests|221
+test|86
+docs|56
+examples|37
+src|14
+doc|13
+docs/source|12
+scripts|11
+azureml|10
 ```
 
-  - 2 packages have `src/` files (1 unintentionally, 1 intentionally)
-  - 222 packages have `test/` files
-  - 153 packages have `tests/` files
-  - 49 packages have `doc/` files
-  - 25 packages have `docs/` files
-  - 24 packages have `python/` files
+However, this is slightly misleading since `setup` would be the prefix of _most_ source distributions.
+So if we re-ran the query sticking to just wheels:
+
+```
+tests|114
+test|35
+docs|15
+examples|11
+azureml|10
+opencensus|9
+sphinxcontrib|6
+backports|5
+benchmarks|5
+scripts|5
+```
+
+Which is slightly annoying that installation of 200-ish packages might take "place" of the top-level `tests` or `scripts` module name,
+depending on how I structure my project.
+
+### Conventions
+
+- 3686 (46%) packages are identified by a prefix which is the normalized package name with hyphens replaced with a dot.
+  - E.g. `requests` -> `requests`, or `zope-browser` -> `zope.browser`
+- 3053 of those packages are _uniquely_ identified by that single prefix. (Meaning they have no other prefix).
+  - E.g. `pytest`-the-package is identified by `pytest`-the-module, so it meets criteria one. But `pytest`-the-package
+    also has the prefix of `_pytest` (anf `py`), so it doesn't meet criteria two.
 
 
-- 3396 have duplicate `__init__.py` filepaths
+---
 
-- Of the not-a-namespace-duplicates
-  - `tests/__init__.py` (112) and `test/__init__.py` (34) are the most common
-  - `exmaples/__init__.py` comes with 10 hits
+[^1]:
+   ```sql
+   SELECT prefix, COUNT(*) as count
+   FROM package_prefixes
+   GROUP BY prefix
+   ORDER BY count DESC
+   LIMIT 10;
+   ```
 
+[^2]:
+   ```sql
+   SELECT pp.prefix, COUNT(*) as count
+   FROM package_prefixes pp
+   JOIN packages p ON pp.package_name = p.package_name
+   WHERE p.url LIKE '%.whl'
+   GROUP BY pp.prefix
+   ORDER BY count DESC
+   LIMIT 10;
+   ```
+
+[^3]: 
+   ```sql
+   SELECT COUNT(*) as matching_packages
+   FROM packages p
+   JOIN package_prefixes pp ON p.package_name = pp.package_name
+   WHERE pp.prefix = REPLACE(p.package_name, '-', '/');
+   ```
+
+[^4]:
+   ```sql
+   WITH matching_packages AS (
+       SELECT p.package_name
+       FROM packages p
+       JOIN package_prefixes pp ON p.package_name = pp.package_name
+       WHERE pp.prefix = REPLACE(p.package_name, '-', '/')
+   ),
+   prefix_counts AS (
+       SELECT package_name, COUNT(*) as prefix_count
+       FROM package_prefixes
+       GROUP BY package_name
+   )
+   SELECT COUNT(*) as single_prefix_packages
+   FROM matching_packages mp
+   JOIN prefix_counts pc ON mp.package_name = pc.package_name
+   WHERE pc.prefix_count = 1;
+   ```
