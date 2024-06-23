@@ -88,7 +88,7 @@ azureml|10
 ```
 
 However, this is slightly misleading since `setup` would be the prefix of _most_ source distributions.
-So if we re-ran the query sticking to just wheels:
+So if we re-ran the query sticking to just wheels [^2]:
 
 ```
 tests|114
