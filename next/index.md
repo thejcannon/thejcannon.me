@@ -19,7 +19,7 @@ You install `requests` and import `requests`. You install `typing-extensions` an
 of worms the author(s) didn't want to open). But, again, this is merely a convention.
 
 So let's say you wanted to map module names to package names? How well would you be doing
-so only via conventions? What are the conventions, and who isn't following them?
+so only via conventions? How unique are modules? What are the conventions, and who isn't following them?
 
 Well, that's exactly what I needed to find out for my hobby project, so hop in! Come along!
 
