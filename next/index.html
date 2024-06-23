@@ -39,14 +39,15 @@ for doing "range requests" to only fetch a fraction of the bytes. (For tarballs,
 
 Swirl all that in a big pot, and voila! You can quickly scrape PyPI to get each package's filenames.
 
-## Step 2: 
+## Step 2: That was too easy, let's add some complexity
 
+Since getting data was kinda easy, the universe has evened things out by making analyzing that data
+in a useful way kinda hard.
 
 
 
 (Enable tooltips for the SQL?)
 
-- top 8k packages (https://hugovk.github.io/top-pypi-packages/)
 - 665 of them don't have wheels
   - 108 of which released this year
   - 5 of which had a latest sdist of not tarball or zip (1 `.msi`, 3 `.exe`, and 1 `.tgz`)
