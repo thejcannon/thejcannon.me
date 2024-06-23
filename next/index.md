@@ -13,8 +13,8 @@ The only relationship between the package name and the module name(s) is the sam
 relationship as between a cat's name and its behavior. _Usually_ "fluffy" is a fluffy cat,
 but it's a convention. "Cupcake" could be the name of a very very naughty kitten.
 
-You install `requests` and import `requests`. You install `typing-extensions` and install
-`typing_extensions`. You install `python-dateutil` you install `dateutil` (I guess it isn't
+You install `requests` and import `requests`. You install `typing-extensions` and import
+`typing_extensions`. You install `python-dateutil` you import `dateutil` (I guess it isn't
 `python_dateutil` because that would imply you could import `go_dateutil` and that's a can
 of worms the author(s) didn't want to open). But, again, this is merely a convention.
 
@@ -106,22 +106,32 @@ scripts|5
 Which is slightly annoying that installation of 200-ish packages might take "place" of the top-level `tests` or `scripts` module name,
 depending on how I structure my project.
 
+For the rest of the statstics, we'll pretend the following prefixes don't exist: `setup`, `test`, `tests`, `doc`, `docs`, `examples`, `benchmarks`, `scripts`. And
+any sdists with `src/` will have the prefix stripped.
+
 ### Conventions
 
-- 3686 (46%) packages are identified by a prefix which is the normalized package name with hyphens replaced with a dot.
-  - E.g. `requests` -> `requests`, or `zope-browser` -> `zope.browser`
-- 3053 of those packages are _uniquely_ identified by that single prefix. (Meaning they have no other prefix).
-  - E.g. `pytest`-the-package is identified by `pytest`-the-module, so it meets criteria one. But `pytest`-the-package
-    also has the prefix of `_pytest` (anf `py`), so it doesn't meet criteria two.
+- 3330 packages are identified by a prefix which is the normalized package name with hyphens replaced with a dot.
+   - E.g. (`requests` -> `requests`, or `zope-browser` -> `zope.browser`)
+   - 3089 of those packages are _uniquely_ identified by that single prefix. (Meaning they have no other prefix).
+     - E.g. `pytest`-the-package is identified by `pytest`-the-module, so it meets criteria one. But `pytest`-the-package
+       also has the prefix of `_pytest` (anf `py`), so it doesn't meet criteria two.
+- Similarly, if we replaced hyphens with path separators we'd add another 381, and hyphens with underscores adds 2166.
+  (if you were wondering which was more popular).
+
+So that leaves us with 2119 packages that don't follow the simple convention.
+
 
 
 ---
 
 [^1]:
    ```sql
-   SELECT prefix, COUNT(*) as count
-   FROM package_prefixes
-   GROUP BY prefix
+   SELECT pp.prefix, COUNT(*) as count
+   FROM package_prefixes pp
+   JOIN packages p ON pp.package_name = p.package_name
+   WHERE p.url LIKE '%.whl'
+   GROUP BY pp.prefix
    ORDER BY count DESC
    LIMIT 10;
    ```
@@ -142,7 +152,7 @@ depending on how I structure my project.
    SELECT COUNT(*) as matching_packages
    FROM packages p
    JOIN package_prefixes pp ON p.package_name = pp.package_name
-   WHERE pp.prefix = REPLACE(p.package_name, '-', '/');
+   WHERE pp.prefix = p.package_name;
    ```
 
 [^4]:
@@ -151,7 +161,7 @@ depending on how I structure my project.
        SELECT p.package_name
        FROM packages p
        JOIN package_prefixes pp ON p.package_name = pp.package_name
-       WHERE pp.prefix = REPLACE(p.package_name, '-', '/')
+       WHERE pp.prefix = p.package_name
    ),
    prefix_counts AS (
        SELECT package_name, COUNT(*) as prefix_count
