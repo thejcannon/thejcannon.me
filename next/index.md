@@ -27,7 +27,7 @@ Well, that's exactly what I needed to find out for my hobby project, so hop in! 
 
 ## Step 1: We need data
 
-Hugo van Kemenade, of Python fame, has [this list](https://hugovk.github.io/top-pypi-packages/) 
+Hugo van Kemenade, has [this list](https://hugovk.github.io/top-pypi-packages/) 
 of the top 8000 most downloaded packages on PyPI, updated monthly. That was easy (Thanks Hugo!).
 
 PyPI has [a nice simple API](https://wiki.python.org/moin/PyPISimple) (no quite literally) for
@@ -42,7 +42,33 @@ Swirl all that in a big pot, and voila! You can quickly scrape PyPI to get each 
 ## Step 2: That was too easy, let's add some complexity
 
 Since getting data was kinda easy, the universe has evened things out by making analyzing that data
-in a useful way kinda hard.
+in a useful way kinda hard. That's because of two reasons:
+
+1. Source distributions (sdists, as opposed to binary ones, bdists) go through a build process. That means there is
+   only a loose relationship between the files inside them and the files that would be inside a built
+   distribution (part of that that build process could be moving, moving, or creating files).
+2. Namespace packages. Namespaces might've been "one honking great idea" but namespace _packages_
+   are usually misunderstood and a honking painful thing to have to remember.
+
+The solution to 1. is easy, just assume the files in the sdist exist in the bdsit as-is.
+
+The solution to 2. is annoyingly complex. Namespace packages come in two forms:
+
+1. Implicit namespace packages. These are the reason you can `mkdir foo`, then `import foo` even though
+   there's no `__init__.py` in it. Any directory can be imported without a `__init__.py` and is treated as
+   an _implicit_ namespace packages. That's a daily annoyance for me, but in this case its actually preferable.
+2. Explicit namespace packages. These have a `__init__.py` with one or two magic incantations that basically say
+   "I'm a namespace". And they can't/shouldn't have much more.
+
+Because of 2., if I was to try and find what common "prefixes" a package has by simplying looking at filenames,
+both `opencensus` and `opencensus-context` and `opencensus-ext-azure` would all claim `opencensus`.
+
+So, for any `__init__.py` whose path shows up in more than one package, we need to see if it contains one of the
+magic incantations.
+
+## Step 3: Let's have fun
+
+
 
 
 
