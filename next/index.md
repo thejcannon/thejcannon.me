@@ -50,7 +50,8 @@ in a useful way kinda hard. That's because of two reasons:
 2. Namespace packages. Namespaces might've been "one honking great idea" but namespace _packages_
    are usually misunderstood and a honking painful thing to have to remember.
 
-The solution to 1. is easy, just assume the files in the sdist exist in the bdsit as-is.
+The solution to 1. is easy, just assume the files in the sdist exist in the bdsit as-is 
+(we'll special-case any files with a `src/` prefix, for sanity).
 
 The solution to 2. is annoyingly complex. Namespace packages come in two forms:
 
@@ -70,7 +71,10 @@ magic incantations.
 
 So, of the 7994 packages (6 of which failed to scrape due to one weird reason or another) scraped...
 
-### Common prefixes
+### Oops
+
+TODO: (put the section here about unfiltered prefixes)
+
 
 The most common prefixes[^1] are:
 
@@ -111,65 +115,173 @@ any sdists with `src/` will have the prefix stripped.
 
 ### Conventions
 
-- 3330 packages are identified by a prefix which is the normalized package name with hyphens replaced with a dot.
-   - E.g. (`requests` -> `requests`, or `zope-browser` -> `zope.browser`)
+TODO: Lowercase the prefix for these
+
+- 3330 packages are identified by a prefix which is the normalized package name. E.g. (`requests` -> `requests`)
    - 3089 of those packages are _uniquely_ identified by that single prefix. (Meaning they have no other prefix).
      - E.g. `pytest`-the-package is identified by `pytest`-the-module, so it meets criteria one. But `pytest`-the-package
        also has the prefix of `_pytest` (anf `py`), so it doesn't meet criteria two.
-- Similarly, if we replaced hyphens with path separators we'd add another 381, and hyphens with underscores adds 2166.
-  (if you were wondering which was more popular).
+- Similarly, if we replaced hypens with underscores we'd add another 2166. Hyphens to path separators adds 381
+   (if you were wondering which was more popular).
+   - E.g. `typing-extensions` -> `typing_extensions` and `zope-browser` -> `zope/browser`, respectively
+   - 2089 and 326 for _uniquely_ prerfixed, respectively.
 
-So that leaves us with 2119 packages that don't follow the simple convention.
+(TODO: Also do replacing `'-'` with `''` (just smush it together)
 
+So that leaves us with 2119 packages (7994 - 3330 - 2166 - 381) that don't follow the simple convention.
 
+Actually, make that 1940. Turns out 179 packages just... don't contain Python code. [^5].
+
+Perhaps there's just more conventions we should uncover?
+
+### More Conventions - Prefixes and suffixes
+
+- Of 134 packages which start with `types-`, 119 of them have a `-stubs` suffixed prefix.
+  - These really shouldn't be imported, so we can just ignore all `types-` packages
+- 68 packages/prefix combinations have `py` prefixing the package name (e.g. `pyusb` -> `usb`)
+- 88 have a `python-` prefix
+- 121 have a `django-` prefix
+- 141 have a `pyobjc-framework` prefix
+- 52 look like `apache-airflow-providers-*` -> `airflow/providers/*`
+- 54 look like `aws-cdk-aws-*` -> `aws_cdk/aws_*/_jsii` [^9]
+- TODO: `scikit` -> `sk*`
+- TODO: `robotframework`
+
+# Working our way back
+
+So, you may remember I wanted to map module names to package names.
+Let's see how successful applying these handful of conventions would net me.
+
+Of 9940 prefixes,
+
+- `package_name = module.lower().replace("_", "-")` -> handles 5590 prefixes (56%) [^10]
+- otherwise, try `f"python-{package_name}"` -> 89 more
+- otherwise, try `f"py{package_name}"` -> 72 more
+- otherwise, try `f"django-{package_name}"` -> 121 more
+- otherwise, try `f"django-{package_name}"` -> 141 more
+
+Brings us to 60.5%.
 
 ---
 
 [^1]: Query
-   ```sql
-   SELECT pp.prefix, COUNT(*) as count
-   FROM package_prefixes pp
-   JOIN packages p ON pp.package_name = p.package_name
-   WHERE p.url LIKE '%.whl'
-   GROUP BY pp.prefix
-   ORDER BY count DESC
-   LIMIT 10;
-   ```
+      ```sql
+      SELECT pp.prefix, COUNT(*) as count
+      FROM package_prefixes pp
+      JOIN packages p ON pp.package_name = p.package_name
+      WHERE p.url LIKE '%.whl'
+      GROUP BY pp.prefix
+      ORDER BY count DESC
+      LIMIT 10;
+      ```
 
 [^2]: Query
-   ```sql
-   SELECT pp.prefix, COUNT(*) as count
-   FROM package_prefixes pp
-   JOIN packages p ON pp.package_name = p.package_name
-   WHERE p.url LIKE '%.whl'
-   GROUP BY pp.prefix
-   ORDER BY count DESC
-   LIMIT 10;
-   ```
+      ```sql
+      SELECT pp.prefix, COUNT(*) as count
+      FROM package_prefixes pp
+      JOIN packages p ON pp.package_name = p.package_name
+      WHERE p.url LIKE '%.whl'
+      GROUP BY pp.prefix
+      ORDER BY count DESC
+      LIMIT 10;
+      ```
 
 [^3]: Query
-   ```sql
-   SELECT COUNT(*) as matching_packages
-   FROM packages p
-   JOIN package_prefixes pp ON p.package_name = pp.package_name
-   WHERE pp.prefix = p.package_name;
-   ```
+      ```sql
+      SELECT COUNT(*) as matching_packages
+      FROM packages p
+      JOIN package_prefixes pp ON p.package_name = pp.package_name
+      WHERE pp.prefix = p.package_name;
+      ```
 
 [^4]: Query
-   ```sql
-   WITH matching_packages AS (
-       SELECT p.package_name
-       FROM packages p
-       JOIN package_prefixes pp ON p.package_name = pp.package_name
-       WHERE pp.prefix = p.package_name
-   ),
-   prefix_counts AS (
-       SELECT package_name, COUNT(*) as prefix_count
-       FROM package_prefixes
-       GROUP BY package_name
-   )
-   SELECT COUNT(*) as single_prefix_packages
-   FROM matching_packages mp
-   JOIN prefix_counts pc ON mp.package_name = pc.package_name
-   WHERE pc.prefix_count = 1;
-   ```
+      ```sql
+      WITH matching_packages AS (
+          SELECT p.package_name
+          FROM packages p
+          JOIN package_prefixes pp ON p.package_name = pp.package_name
+          WHERE pp.prefix = p.package_name
+      ),
+      prefix_counts AS (
+          SELECT package_name, COUNT(*) as prefix_count
+          FROM package_prefixes
+          GROUP BY package_name
+      )
+      SELECT COUNT(*) as single_prefix_packages
+      FROM matching_packages mp
+      JOIN prefix_counts pc ON mp.package_name = pc.package_name
+      WHERE pc.prefix_count = 1;
+      ```
+
+[^5]: Query
+      ```sql
+      SELECT p.package_name, p.url
+      FROM packages p
+      LEFT JOIN package_prefixes pp ON p.package_name = pp.package_name
+      WHERE pp.package_name IS NULL;
+      ```
+
+[^6]: Query
+      ```sql
+      SELECT p.package_name,
+             GROUP_CONCAT(pp.prefix) AS prefixes
+      FROM packages p
+      LEFT JOIN package_prefixes pp ON p.package_name = pp.package_name
+      WHERE NOT EXISTS (
+          SELECT 1
+          FROM package_prefixes pp2
+          WHERE pp2.package_name = p.package_name
+          AND (
+              pp2.prefix = REPLACE(p.package_name, '-', '_')
+              OR
+              pp2.prefix = REPLACE(p.package_name, '-', '/')
+          )
+      )
+      GROUP BY p.package_name
+      HAVING prefixes IS NOT NULL;
+      ```
+
+[^7]: Query
+      ```sql
+      SELECT COUNT(DISTINCT package_name)
+      FROM package_prefixes
+      WHERE package_name LIKE "types-%"
+        AND prefix LIKE "%-stubs"
+        AND substr(package_name, 7) = substr(prefix, 1, length(prefix) - 6)
+      ```
+
+[^8]: Query
+      ```sql
+      SELECT p.package_name, pp.prefix
+      FROM packages p
+      JOIN package_prefixes pp ON p.package_name = pp.package_name
+      WHERE p.package_name LIKE 'py%'
+        AND (pp.prefix = SUBSTR(p.package_name, 3)
+             OR pp.prefix = REPLACE(SUBSTR(p.package_name, 3), '-', '_')
+             OR pp.prefix = REPLACE(SUBSTR(p.package_name, 3), '-', '/'));
+      ```
+
+[^9]: Query
+      ```sql
+      SELECT COUNT(*)
+      FROM packages p
+      JOIN package_prefixes pp ON p.package_name = pp.package_name
+      WHERE p.package_name LIKE 'aws-cdk-aws-%'
+        AND pp.prefix = 'aws_cdk/' || REPLACE(SUBSTR(p.package_name, 9), '-', '_') || '/_jsii';
+      ```
+
+[^10]: Query
+      ```sql
+      SELECT COUNT(*) as matching_packages
+      FROM packages p
+      JOIN package_prefixes pp ON p.package_name = pp.package_name
+      WHERE LOWER(pp.prefix) = p.package_name
+      OR LOWER(REPLACE(pp.prefix, "_", "-")) = p.package_name
+      ```
+
+```
+SELECT COUNT(DISTINCT package_name)
+FROM package_prefixes
+WHERE 'django-' || LOWER(prefix) = package_name
+   OR 'django-' || LOWER(REPLACE(prefix, '_', '-')) = package_name;
+```
