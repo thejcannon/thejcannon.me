@@ -23,6 +23,6 @@ social-network-links:
 remote_theme: daattali/beautiful-jekyll@6.0.1
 plugins:
   - jekyll-feed
-  - jekyll-seo-tag
+  - jekyll-toc
 
 
