@@ -47,11 +47,11 @@ in a useful way kinda hard. That's because of two reasons:
 1. Source distributions (sdists, as opposed to binary ones, bdists) go through a build process. That means there is
    only a loose relationship between the files inside them and the files that would be inside a built
    distribution (part of that that build process could be moving, moving, or creating files).
-2. Namespace packages. Namespaces might've been "one honking great idea" but namespace _packages_
+   There are 658 sdist-only packages on the list.
+3. Namespace packages. Namespaces might've been "one honking great idea" but namespace _packages_
    are usually misunderstood and a honking painful thing to have to remember.
 
-The solution to 1. is easy, just assume the files in the sdist exist in the bdsit as-is 
-(we'll special-case any files with a `src/` prefix, for sanity).
+The solution to 1. is easy, let's ignore them.
 
 The solution to 2. is annoyingly complex. Namespace packages come in two forms:
 
@@ -69,49 +69,29 @@ magic incantations.
 
 ## Step 3: Let's have fun
 
-So, of the 7994 packages (6 of which failed to scrape due to one weird reason or another) scraped...
+So, of the 7258 packages (663 sdists, and 3 bdists of weird extensions, and 79 packages with no valid Python files) scraped...
 
 ### Oops
-
-TODO: (put the section here about unfiltered prefixes)
-
 
 The most common prefixes[^1] are:
 
 ```
-setup|629
-tests|221
-test|86
-docs|56
-examples|37
-src|14
-doc|13
-docs/source|12
-scripts|11
-azureml|10
-```
-
-However, this is slightly misleading since `setup` would be the prefix of _most_ source distributions.
-So if we re-ran the query sticking to just wheels [^2]:
-
-```
-tests|114
-test|35
-docs|15
-examples|11
-azureml|10
-opencensus|9
-sphinxcontrib|6
-backports|5
+tests|111
+test|34
+nvidia|22
+examples|10
+docs/conf|9
 benchmarks|5
-scripts|5
+docs|5
+__init__|4
+cv2|4
+docs/source/conf|4
 ```
 
-Which is slightly annoying that installation of 200-ish packages might take "place" of the top-level `tests` or `scripts` module name,
+Which is slightly annoying that installation of over 100 packages might take "place" of the top-level `tests` module name,
 depending on how I structure my project.
 
-For the rest of the statstics, we'll pretend the following prefixes don't exist: `setup`, `test`, `tests`, `doc`, `docs`, `examples`, `benchmarks`, `scripts`. And
-any sdists with `src/` will have the prefix stripped.
+For the rest of the statstics, we'll pretend the following prefixes don't exist: `setup`, `test`, `tests`, `doc`, `docs`, `examples`, `benchmarks`, `scripts`, etc...
 
 ### Conventions
 
@@ -129,8 +109,6 @@ TODO: Lowercase the prefix for these
 (TODO: Also do replacing `'-'` with `''` (just smush it together)
 
 So that leaves us with 2119 packages (7994 - 3330 - 2166 - 381) that don't follow the simple convention.
-
-Actually, make that 1940. Turns out 179 packages just... don't contain Python code. [^5].
 
 Perhaps there's just more conventions we should uncover?
 
@@ -166,22 +144,9 @@ Brings us to 60.5%.
 
 [^1]: Query
       ```sql
-      SELECT pp.prefix, COUNT(*) as count
-      FROM package_prefixes pp
-      JOIN packages p ON pp.package_name = p.package_name
-      WHERE p.url LIKE '%.whl'
-      GROUP BY pp.prefix
-      ORDER BY count DESC
-      LIMIT 10;
-      ```
-
-[^2]: Query
-      ```sql
-      SELECT pp.prefix, COUNT(*) as count
-      FROM package_prefixes pp
-      JOIN packages p ON pp.package_name = p.package_name
-      WHERE p.url LIKE '%.whl'
-      GROUP BY pp.prefix
+      SELECT prefix, COUNT(*) as count
+      FROM package_prefixes
+      GROUP BY prefix
       ORDER BY count DESC
       LIMIT 10;
       ```
@@ -211,14 +176,6 @@ Brings us to 60.5%.
       FROM matching_packages mp
       JOIN prefix_counts pc ON mp.package_name = pc.package_name
       WHERE pc.prefix_count = 1;
-      ```
-
-[^5]: Query
-      ```sql
-      SELECT p.package_name, p.url
-      FROM packages p
-      LEFT JOIN package_prefixes pp ON p.package_name = pp.package_name
-      WHERE pp.package_name IS NULL;
       ```
 
 [^6]: Query
