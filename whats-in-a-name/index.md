@@ -10,7 +10,7 @@ And we name a lot of things. In Python (a name) code is budled and uploaded as a
 (another name), usually to the Python Package Index (PyPI, a third name). Inside of these
 packages is code. Most commonly, Python code (but they truly can contain anything).
 The only relationship between the package name and the module name(s) is the same as the 
-relationship as between a cat's name and its behavior. _Usually_ "fluffy" is a fluffy cat,
+relationship as between a cat's name and its demeanor. _Usually_ "fluffy" is a fluffy cat,
 but it's a convention. "Cupcake" could be the name of a very very naughty kitten.
 
 You install `requests` and import `requests`. You install `typing-extensions` and import
